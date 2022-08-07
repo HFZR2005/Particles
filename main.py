@@ -2,7 +2,14 @@ import pygame
 import random
 import math
 
+#----------------------------------------------------------------------------- variables
+
+gravity = 0.02
+gravity_angle = math.pi
+elasticity = 0.999
+air_mass = 0.4
 #----------------------------------------------------------------------------- setting up pygame display
+
 bg = (255, 255, 255)
 (width, height) =  (800, 800)
 screen = pygame.display.set_mode((width, height))
@@ -20,10 +27,6 @@ def addVectors(angle1, length1, angle2, length2):
     angle = math.pi / 2 - math.atan2(y, x)
 
     return (angle, length)
-
-gravity = 0.02
-gravity_angle = math.pi
-elasticity = 0.999
 
 
 #---------------------------------------------------- mouse interactions
@@ -81,6 +84,7 @@ class Particle():
         self.thickness = 1
         self.speed = 0
         self.angle = 0
+        self.drag = (self.mass / (self.mass + air_mass)) ** self.size
 
     def display(self):
         pygame.draw.circle(screen, self.colour, (int(self.x), int(self.y)), self.size, self.thickness)
@@ -91,6 +95,7 @@ class Particle():
         self.y -= math.cos(self.angle) * self.speed
 
         self.angle, self.speed = addVectors(self.angle, self.speed, gravity_angle, gravity)
+        self.speed *= self.drag
 
     def bounce(self):
         if self.x > width - self.size:
